@@ -73,6 +73,10 @@ class Config():
         self.mouse_auto_aim = self.config_Mouse.getboolean("mouse_auto_aim")
         self.mouse_ghub = self.config_Mouse.getboolean("mouse_ghub")
         self.mouse_rzr = self.config_Mouse.getboolean("mouse_rzr")
+        self.mouse_kmboxnet = self.config_Mouse.getboolean("mouse_kmboxnet")
+        self.kmboxnet_host = self.config_Mouse.get("kmboxnet_host", fallback="192.168.2.188")
+        self.kmboxnet_port = self.config_Mouse.getint("kmboxnet_port", fallback=1282)
+        self.kmboxnet_uuid = self.config_Mouse.get("kmboxnet_uuid", fallback="AF425414")
         
         # Shooting
         self.config_Shooting = self.config["Shooting"]
@@ -95,7 +99,7 @@ class Config():
         self.ai_model_image_size = int(self.config_AI["ai_model_image_size"])
         self.AI_conf = float(self.config_AI["AI_conf"])
         self.AI_device = str(self.config_AI["AI_device"])
-        self.AI_enable_AMD = self.config_AI.getboolean("AI_enable_AMD")
+        self.AI_enable_DML = self.config_AI.getboolean("AI_enable_DML")
         self.disable_tracker = self.config_AI.getboolean("disable_tracker")
         
         # Overlay

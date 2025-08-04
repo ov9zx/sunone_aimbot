@@ -1,4 +1,6 @@
 cuda_python
+torch-directml
+kmNet
 bettercam
 numpy
 pywin32

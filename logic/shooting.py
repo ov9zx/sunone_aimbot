@@ -8,11 +8,14 @@ from logic.config_watcher import cfg
 from logic.logger import logger
 
 if cfg.mouse_rzr:
-    from logic.rzctl import RZCONTROL 
+    from logic.rzctl import RZCONTROL
     from logic.rzctl import MOUSE_CLICK
 
 if cfg.arduino_move or cfg.arduino_shoot:
     from logic.arduino import arduino
+
+if cfg.mouse_kmboxnet:
+    from logic.kmboxnet import kmbox
     
 class Shooting(threading.Thread):
     def __init__(self):
@@ -26,13 +29,16 @@ class Shooting(threading.Thread):
         
         self.start()
         if cfg.mouse_rzr:
-            dll_name = "rzctl.dll" 
+            dll_name = "rzctl.dll"
             script_directory = os.path.dirname(os.path.abspath(__file__))
             dll_path = os.path.join(script_directory, dll_name)
             self.rzr = RZCONTROL(dll_path)
-            
+
             if not self.rzr.init():
                 logger.error("[Shooting] Failed to initialize rzctl")
+
+        if cfg.mouse_kmboxnet:
+            self.kmbox = kmbox
             
     def run(self):
         while True:
@@ -54,6 +60,8 @@ class Shooting(threading.Thread):
                             self.ghub.mouse_down()
                         elif cfg.arduino_shoot:  # arduino
                             arduino.press()
+                        elif cfg.mouse_kmboxnet:  # kmbox
+                            self.kmbox.press()
                         else:  # native
                             win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
 
@@ -66,21 +74,26 @@ class Shooting(threading.Thread):
                     self.ghub.mouse_up()
                 elif cfg.arduino_shoot:  # arduino
                     arduino.release()
+                elif cfg.mouse_kmboxnet:  # kmbox
+                    self.kmbox.release()
                 else:  # native
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 
                 self.button_pressed = False
 
             if shooting_state == False and self.button_pressed == True or bScope == False and self.button_pressed == True:
-                if cfg.mouse_ghub == False and cfg.arduino_shoot == False: # native
+                if not cfg.mouse_ghub and not cfg.arduino_shoot and not cfg.mouse_kmboxnet:  # native
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
-                    
-                if cfg.mouse_ghub and cfg.arduino_shoot == False: #ghub
+
+                if cfg.mouse_ghub and not cfg.arduino_shoot and not cfg.mouse_kmboxnet:  # ghub
                     self.ghub.mouse_up()
-                    
-                if cfg.arduino_shoot: # arduino
+
+                if cfg.arduino_shoot:  # arduino
                     arduino.release()
-                
+
+                if cfg.mouse_kmboxnet:  # kmbox
+                    self.kmbox.release()
+
                 self.button_pressed = False
         
         # By triggerbot
@@ -92,6 +105,8 @@ class Shooting(threading.Thread):
                     self.ghub.mouse_down()
                 elif cfg.arduino_shoot:  # arduino
                     arduino.press()
+                elif cfg.mouse_kmboxnet:  # kmbox
+                    self.kmbox.press()
                 else:  # native
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTDOWN, 0, 0, 0, 0)
 
@@ -105,6 +120,8 @@ class Shooting(threading.Thread):
                     self.ghub.mouse_up()
                 elif cfg.arduino_shoot:  # arduino
                     arduino.release()
+                elif cfg.mouse_kmboxnet:  # kmbox
+                    self.kmbox.release()
                 else:  # native
                     win32api.mouse_event(win32con.MOUSEEVENTF_LEFTUP, 0, 0, 0, 0)
 

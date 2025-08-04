@@ -683,7 +683,28 @@ elif st.session_state.current_tab == "CONFIG":
         label="Mouse Razer",
         value=config.getboolean('Mouse', 'mouse_rzr'),
         key="config_mouse_rzr")
-    
+
+    mouse_kmboxnet = st.checkbox(
+        label="Mouse KMBoxNet",
+        value=config.getboolean('Mouse', 'mouse_kmboxnet'),
+        key="config_mouse_kmboxnet")
+
+    if mouse_kmboxnet:
+        kmboxnet_host = st.text_input(
+            label="KMBoxNet host",
+            value=config.get('Mouse', 'kmboxnet_host'),
+            key="config_kmboxnet_host")
+
+        kmboxnet_port = st.number_input(
+            label="KMBoxNet port",
+            value=config.getint('Mouse', 'kmboxnet_port'),
+            key="config_kmboxnet_port")
+
+        kmboxnet_uuid = st.text_input(
+            label="KMBoxNet UUID",
+            value=config.get('Mouse', 'kmboxnet_uuid'),
+            key="config_kmboxnet_uuid")
+
     config.set('Mouse', 'mouse_dpi', str(mouse_dpi))
     config.set('Mouse', 'mouse_sensitivity', str(mouse_sensitivity))
     config.set('Mouse', 'mouse_fov_width', str(mouse_fov_width))
@@ -694,6 +715,11 @@ elif st.session_state.current_tab == "CONFIG":
     config.set('Mouse', 'mouse_auto_aim', str(mouse_auto_aim))
     config.set('Mouse', 'mouse_ghub', str(mouse_ghub))
     config.set('Mouse', 'mouse_rzr', str(mouse_rzr))
+    config.set('Mouse', 'mouse_kmboxnet', str(mouse_kmboxnet))
+    if mouse_kmboxnet:
+        config.set('Mouse', 'kmboxnet_host', kmboxnet_host)
+        config.set('Mouse', 'kmboxnet_port', str(kmboxnet_port))
+        config.set('Mouse', 'kmboxnet_uuid', kmboxnet_uuid)
 
     # Shooting
     st.subheader("Shooting", divider=True)
@@ -818,17 +844,17 @@ elif st.session_state.current_tab == "CONFIG":
         key="config_AI_device"
     )
     
-    AI_enable_AMD = st.checkbox(
-        label="AI enable AMD",
-        value=config.getboolean('AI', 'AI_enable_AMD'),
-        key="config_AI_enable_AMD"
+    AI_enable_DML = st.checkbox(
+        label="AI enable DirectML",
+        value=config.getboolean('AI', 'AI_enable_DML'),
+        key="config_AI_enable_DML"
     )
     
     config.set('AI', 'AI_model_name', AI_model_name)
     config.set('AI', 'AI_model_image_size', str(AI_model_image_size))
     config.set('AI', 'AI_conf', str(AI_conf))
     config.set('AI', 'AI_device', AI_device)
-    config.set('AI', 'AI_enable_AMD', str(AI_enable_AMD))
+    config.set('AI', 'AI_enable_DML', str(AI_enable_DML))
 
     # Overlay
     st.subheader("Overlay", divider=True)

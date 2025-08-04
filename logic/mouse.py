@@ -13,6 +13,9 @@ from logic.logger import logger
 if cfg.mouse_rzr:
     from logic.rzctl import RZCONTROL
 
+if cfg.mouse_kmboxnet:
+    from logic.kmboxnet import kmbox
+
 if cfg.arduino_move or cfg.arduino_shoot:
     from logic.arduino import arduino
 
@@ -47,8 +50,9 @@ class MouseThread:
         self.section_size_y = self.screen_height / 100
 
     def get_arch(self):
-        if cfg.AI_enable_AMD:
-            return f'hip:{cfg.AI_device}'
+        if cfg.AI_enable_DML:
+            import torch_directml
+            return torch_directml.device(int(cfg.AI_device))
         if 'cpu' in cfg.AI_device:
             return 'cpu'
         return f'cuda:{cfg.AI_device}'
@@ -63,6 +67,9 @@ class MouseThread:
             self.rzr = RZCONTROL(dll_path)
             if not self.rzr.init():
                 logger.error("Failed to initialize rzctl")
+
+        if cfg.mouse_kmboxnet:
+            self.kmbox = kmbox
 
     def process_data(self, data):
         if isinstance(data, sv.Detections):
@@ -196,7 +203,7 @@ class MouseThread:
         shooting_state = self.get_shooting_key_state()
 
         if shooting_state or cfg.mouse_auto_aim:
-            if not cfg.mouse_ghub and not cfg.arduino_move and not cfg.mouse_rzr:
+            if not cfg.mouse_ghub and not cfg.arduino_move and not cfg.mouse_rzr and not cfg.mouse_kmboxnet:
                 win32api.mouse_event(win32con.MOUSEEVENTF_MOVE, int(x), int(y), 0, 0)
             elif cfg.mouse_ghub:
                 self.ghub.mouse_xy(int(x), int(y))
@@ -204,6 +211,8 @@ class MouseThread:
                 arduino.move(int(x), int(y))
             elif cfg.mouse_rzr:
                 self.rzr.mouse_move(int(x), int(y), True)
+            elif cfg.mouse_kmboxnet:
+                self.kmbox.move(int(x), int(y))
 
     def get_shooting_key_state(self):
         for key_name in cfg.hotkey_targeting_list:

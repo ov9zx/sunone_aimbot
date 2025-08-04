@@ -57,15 +57,15 @@ def Warnings():
         logger.warning("A small value of `AI_conf ` can lead to a large number of false positives.")
     
     # Mouse
-    if cfg.mouse_ghub == False and cfg.arduino_move == False and cfg.arduino_shoot == False:
+    if not any([cfg.mouse_ghub, cfg.arduino_move, cfg.arduino_shoot, cfg.mouse_kmboxnet]):
         logger.warning("win32api is detected in some games.")
-    if cfg.mouse_ghub and cfg.arduino_move == False and cfg.arduino_shoot == False:
+    if cfg.mouse_ghub and not any([cfg.arduino_move, cfg.arduino_shoot, cfg.mouse_kmboxnet]):
         logger.warning("ghub is detected in some games.")
-    if cfg.arduino_move == False:
+    if not cfg.arduino_move and not cfg.mouse_kmboxnet:
         logger.warning("Using standard libraries for mouse moving such as `win32` or `Ghub driver` without bypassing, for example, how Arduino can speed up the account blocking process, use it at your own risk.")
-    if cfg.arduino_shoot == False and cfg.auto_shoot:
+    if not cfg.arduino_shoot and cfg.auto_shoot and not cfg.mouse_kmboxnet:
         logger.warning("Using standard libraries for mouse shooting such as `win32` or `Ghub driver` without bypassing, for example, how Arduino can speed up the account blocking process, use it at your own risk.")
-    selected_methods = sum([cfg.arduino_move, cfg.mouse_ghub, cfg.mouse_rzr])
+    selected_methods = sum([cfg.arduino_move, cfg.mouse_ghub, cfg.mouse_rzr, cfg.mouse_kmboxnet])
     if selected_methods > 1:
         raise ValueError("WARNING: You use more than one mouse input method.")
     
